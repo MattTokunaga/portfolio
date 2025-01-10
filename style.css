@@ -31,12 +31,12 @@ a.current {
     border-bottom-color: oklch(80% 3% 200);
     padding-bottom: .1em;
 }
-a:hover {
+nav a:hover {
     border-bottom-width: .4em;
     border-bottom-style: solid;
     border-bottom-color: var(--color-accent);
     padding-bottom: .1em;
-    background-color: oklch(from var(--color-accent) 95% 5% h)
+    background-color: oklch(from var(--color-accent) 95% 5% h);
 }
 label {
     font: inherit;
@@ -79,4 +79,119 @@ h1 {
 h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
     text-wrap: balance;
+}
+.alternate-colors span:nth-child(odd) {
+    color: rgb(81, 0, 255);
+}
+.alternate-colors span:nth-child(even) {
+    color: rgb(255, 196, 0);
+}
+.alternate-colors {
+    background-color: red;
+}
+body.resume {
+    background-color: var(--color-accent);
+}
+body.resume h2 {
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200%; /* Make the gradient wider */
+    background-position: left; /* Start the gradient from the left */
+    animation: rainbow 1s linear infinite; /* Optional: animate the gradient */
+}
+
+body.resume a {
+    text-decoration: underline;
+}
+
+@keyframes rainbow {
+    0% {
+      background-position: left;
+    }
+    100% {
+      background-position: right;
+    }
+}
+
+body.resume section {
+    padding: 1ch;
+}
+
+.redacted:hover {
+    back
+}
+
+.unredacted {
+    visibility: hidden;
+}
+
+.redacted:hover .unredacted {
+    visibility: visible;
+}
+
+.jumpscare {
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+.jumpscare-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.jumpscare-container:target {
+    display: flex;
+}
+
+.scary-image {
+    max-width: 90%;
+    max-height: 90%;
+    animation: shake 0.5s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+.close-btn:focus {
+    outline: none;
+}
+
+.scary-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

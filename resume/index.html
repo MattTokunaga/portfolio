@@ -6,7 +6,7 @@
     <title>Resume</title>
     <link rel="stylesheet" href="../style.css">
 </head>
-<body>
+<body class="resume">
     <nav>
         <a href="../index.html">Home</a>
         <a href="../projects/index.html">Projects</a>
@@ -19,17 +19,60 @@
         <h2>Contact Info</h2>
         Name: Matthew Tokunaga <br>
         School email: m2tokunaga@ucsd.edu <br>
-        Phone number: 916-[REDACTED] <br>
+        Phone number: 916-<span class="redacted"><a href="#jumpscare" class="jumpscare">[REDACTED]</a> <span class="unredacted">Click to unredact</span></span> <br>
         Github: <a href="https://github.com/matttokunaga" target="_blank">Click me</a> <br>
         LinkedIn: <a href="https://www.linkedin.com/in/matthew-tokunaga/" target="_blank">Click me</a>
     </section>
+    <div id="jumpscare" class="jumpscare-container">
+        <img src="unredacted.png" alt="Scary Image" class="scary-image">
+        <a href="#" class="close-btn">Close</a>
+    </div>
     <section>
         <h2>Summary</h2>
         <p>Third-year student at UC San Diego double majoring in mathematics and data science. Highly developed critical thinking and problem-solving skills, as well as technical knowledge of data analysis tools like Python, R, and SQL. Fast learner capable of self-directed teaching. Experienced team player that is able to work effectively with a large range of personality types in high pressure situations.</p>
     </section>
     <section>
         <h2>Education</h2>
-        <b>University of California, San Diego</b>
+        <p class="alternate-colors">
+            <span>U</span>
+            <span>n</span>
+            <span>i</span>
+            <span>v</span>
+            <span>e</span>
+            <span>r</span>
+            <span>s</span>
+            <span>i</span>
+            <span>t</span>
+            <span>y</span>
+            <span> </span>
+            <span> </span>
+            <span>o</span>
+            <span>f</span>
+            <span> </span>
+            <span> </span>
+            <span>C</span>
+            <span>a</span>
+            <span>l</span>
+            <span>i</span>
+            <span>f</span>
+            <span>o</span>
+            <span>r</span>
+            <span>n</span>
+            <span>i</span>
+            <span>a</span>
+            <span>,</span>
+            <span> </span>
+            <span> </span>
+            <span>S</span>
+            <span>a</span>
+            <span>n</span>
+            <span> </span>
+            <span> </span>
+            <span>D</span>
+            <span>i</span>
+            <span>e</span>
+            <span>g</span>
+            <span>o</span>
         <ul>
             <li>Bachelor of Science in Mathematics and Data Science, 3.9 GPA</li>
             <li>Notable Coursework: Statistics, Probability, Data Structures and Algorithms</li>
@@ -37,7 +80,7 @@
         </ul>
     </section>
     <section>
-        <h2>Skills</h2>
+        <h2 class="skills">Skills</h2>
         <b>Programming Languages</b> - Python, SQL, R, Java <br>
         <b>Libraries</b> - Pandas, NumPy, OpenCV, Matplotlib, Sklearn, Tensorflow, Keras, Selenium, BeautifulSoup <br>
         <b>Mischellaneous</b> - Git, Github, MS Office
