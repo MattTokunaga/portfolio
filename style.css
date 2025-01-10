@@ -118,9 +118,6 @@ body.resume section {
     padding: 1ch;
 }
 
-.redacted:hover {
-    back
-}
 
 .unredacted {
     visibility: hidden;
