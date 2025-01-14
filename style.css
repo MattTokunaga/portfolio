@@ -215,3 +215,25 @@ em {
     font-weight: bold;
     font-size: xx-large;
 }
+
+article.art1 {
+    margin-left: 0ch;
+}
+article.art2 {
+    margin-left: 10ch;
+}
+article.art3 {
+    margin-left: 20ch;
+}
+article.art4 {
+    margin-left: 30ch;
+}
+article.art5 {
+    margin-left: 40ch;
+}
+article.art6 {
+    margin-left: 50ch;
+}
+article.art7 {
+    margin-left: 60ch;
+}
