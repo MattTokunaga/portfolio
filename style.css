@@ -105,6 +105,7 @@ body.resume {
 body.resume h2 {
     background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200%; /* Make the gradient wider */
     background-position: left; /* Start the gradient from the left */
@@ -237,3 +238,32 @@ article.art6 {
 article.art7 {
     margin-left: 60ch;
 }
+
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Push the video behind content */
+    overflow: hidden;
+  }
+  
+  video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+  }
+  
+  .content {
+    position: relative;
+    z-index: 1; /* Ensure content appears above the video */
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin-top: 20%;
+  }
