@@ -1,6 +1,8 @@
 html {
     --color-accent: #39ff14;
     accent-color: var(--color-accent);
+
+    color-scheme: light dark;
 }
 body {
     /* Set line height to 1.5 times the font size
@@ -12,11 +14,14 @@ body {
     padding: 5ch;
 }
 nav {
+    
+    --border-color: oklch(50% 10% 200 / 40%);
+
     display: flex;
     margin-bottom: 5ch;
     border-bottom-width: 1px;
     border-bottom-style: solid;
-    border-bottom-color: oklch(80% 3% 200);
+    border-bottom-color: var(--border-color);
 }
 a {
     flex: 1;
@@ -28,7 +33,7 @@ a {
 a.current {
     border-bottom-width: .4em;
     border-bottom-style: solid;
-    border-bottom-color: oklch(80% 3% 200);
+    border-bottom-color: var(--border-color);
     padding-bottom: .1em;
 }
 nav a:hover {
@@ -36,7 +41,7 @@ nav a:hover {
     border-bottom-style: solid;
     border-bottom-color: var(--color-accent);
     padding-bottom: .1em;
-    background-color: oklch(from var(--color-accent) 95% 5% h);
+    background-color: color-mix(in oklch, var(--color-accent), canvas 85%);
 }
 label {
     font: inherit;
@@ -266,4 +271,15 @@ article.art7 {
     text-align: center;
     font-family: Arial, sans-serif;
     margin-top: 20%;
+  }
+  
+  label.color-scheme {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center; /* Aligns the text and select box vertically */
+    gap: 8px; /* Adds space between the text and the select box */
+    font-size: 80%;
+    font-family: inherit;
   }
