@@ -304,3 +304,7 @@ dt {
 dd {
     grid-row: 2;
 }
+
+img.proj-img {
+    max-width: 28ch;
+}
