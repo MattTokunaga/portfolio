@@ -283,3 +283,24 @@ article.art7 {
     font-size: 80%;
     font-family: inherit;
   }
+
+dl {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: auto;
+    background: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200%; /* Make the gradient wider */
+    background-position: left; /* Start the gradient from the left */
+    animation: rainbow 1s linear infinite; /* Optional: animate the gradient */ 
+}
+
+dt {
+    grid-row: 1;
+}
+
+dd {
+    grid-row: 2;
+}
