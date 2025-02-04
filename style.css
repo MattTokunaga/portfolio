@@ -308,3 +308,82 @@ dd {
 img.proj-img {
     max-width: 28ch;
 }
+
+article.proj-article {
+    display: grid;
+}
+
+.project-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.project-year {
+    align-self: flex-start;
+}
+
+svg {
+    max-width: 20em;
+    width: 100%;
+    height: auto;
+    margin-block: 2em;
+    overflow: visible;
+}
+
+em.proj-legend {
+    font-weight: inherit;
+    font-size: inherit;
+}
+
+ul.legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    list-style: none;
+    border-style: solid;
+    border-width: 2px;
+    padding: 1em;
+    border-color: black;
+    background-color: lightgreen;
+    flex: 1;
+    margin-right: 5ch;
+}
+
+ul.legend li::before {
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+    background-color: var(--color);
+    border: solid;
+    border-width: 2px;
+    border-color: black;
+}
+
+div.container {
+    display: flex;
+    align-items: center;
+    gap: 5ch;
+    flex-wrap: wrap;
+}
+
+svg:has(path:hover) {
+    path:not(:hover) {
+        opacity: 50%;
+    }
+}
+
+path {
+    transition: 300ms;
+    cursor: pointer;
+}
+
+.selected {
+    --color: var(--color-accent) !important;
+  
+    &:is(path) {
+      fill: var(--color);
+    }
+}
