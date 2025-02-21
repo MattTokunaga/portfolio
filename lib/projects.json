@@ -30,10 +30,11 @@
         "description": "I had no idea what I was doing when I did this."
     },
     {
-        "title": "Facere voluptate minima laboriosam?",
-        "year": 2024,
-        "image": "https://vis-society.github.io/labs/2/images/empty.svg",
-        "description": "Possimus similique quod ut ratione iure, omnis cupiditate, ipsum praesentium suscipit magnam est nam beatae quaerat eaque aliquid animi nostrum obcaecati explicabo repellat deserunt! Explicabo porro quia placeat dolore! Modi."
+        "title": "Boston Bike Data Viz",
+        "year": 2025,
+        "image": "../images/bikebubbles.png",
+        "description":"Data visualization for bike routes and bike station traffic in Boston.",
+        "url": "https://matttokunaga.github.io/bikebubbles/"
     },
     {
         "title": "Beatae iure rem tempore.",
