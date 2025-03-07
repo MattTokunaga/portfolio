@@ -1,7 +1,31 @@
+
+
+
 let data = [];
 let commits = [];
 let xScale;
 let yScale
+let selectedCommits = [];
+let commitProgress = 100;
+let filteredCommits;
+let filteredLines;
+let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+let newCommitSlice;
+
+let NUM_ITEMS = 18; // Ideally, let this value be the length of your commit history
+let ITEM_HEIGHT = 100; // Feel free to change
+let VISIBLE_COUNT = 6; // Feel free to change as well
+let totalHeight = (NUM_ITEMS - 1) * ITEM_HEIGHT;
+const scrollContainer = d3.select('#scroll-container');
+const spacer = d3.select('#spacer');
+spacer.style('height', `${totalHeight}px`);
+const itemsContainer = d3.select('#items-container');
+scrollContainer.on('scroll', () => {
+  const scrollTop = scrollContainer.property('scrollTop');
+  let startIndex = Math.floor(scrollTop / ITEM_HEIGHT);
+  startIndex = Math.max(0, Math.min(startIndex, commits.length - VISIBLE_COUNT));
+  renderItems(startIndex);
+});
 
 async function loadData() {
     data = await d3.csv('loc.csv', (row) => ({
@@ -14,11 +38,13 @@ async function loadData() {
     }));
 
     displayStats();
+    renderItems(0);
+    displayCommitFiles();
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   await loadData();
-  createScatterplot();
+  updateScatterplot(commits);
 });
 
 function processCommits() {
@@ -29,7 +55,7 @@ function processCommits() {
         let { author, date, time, timezone, datetime } = first;
         let ret = {
           id: commit,
-          url: 'https://github.com/vis-society/lab-7/commit/' + commit,
+          url: 'https://github.com/MattTokunaga/portfolio/commit/' + commit,
           author,
           date,
           time,
@@ -41,6 +67,9 @@ function processCommits() {
   
         Object.defineProperty(ret, 'lines', {
           value: lines,
+          writable: true,
+          enumerable: true,
+          configurable: true
           // What other options do we need to set?
           // Hint: look up configurable, writable, and enumerable
         });
@@ -50,71 +79,83 @@ function processCommits() {
   }
 
 function displayStats() {
-    // Process commits first
-    processCommits();
   
-    // Create the dl element
-    const dl = d3.select('#stats').append('dl').attr('class', 'stats');
-  
-    // Add total LOC
-    dl.append('dt').html('Total <abbr title="Lines of code">LOC</abbr>:');
-    dl.append('dd').text(data.length);
-  
-    // Add total commits
-    dl.append('dt').text('Total commits:');
-    dl.append('dd').text(commits.length);
-  
-    // Add more stats as needed...
-    // Add longest line
-    const longestLine = d3.max(data, (d) => d.line);
-    dl.append('dt').text('Longest line:');
-    dl.append('dd').text(longestLine);
+  // Process commits first
+  processCommits();
 
-    // Add maximum depth
-    const maxDepth = d3.max(data, (d) => d.depth);
-    dl.append('dt').text('Maximum depth:');
-    dl.append('dd').text(maxDepth);
+  // Create the dl element
+  d3.select('#stats').select('dl.stats').remove();
+  const dl = d3.select('#stats').append('dl').attr('class', 'stats');
 
-    // Add time of day when most commits are made
-    const timeOfDay = ['Morning', 'Afternoon', 'Evening', 'Night'];
-    const timeOfDayCounts = [0, 0, 0, 0];
+  // Add total LOC
+  dl.append('dt').html('Total <abbr title="Lines of code">LOC</abbr>:');
+  dl.append('dd').text(filteredCommits?
+    filteredCommits.map(commit => commit.totalLines).reduce((total, num) => total + num, 0):
+    data.length
+  );
 
-    commits.forEach(commit => {
-        const hour = commit.datetime.getHours();
-        if (hour >= 6 && hour < 12) {
-            timeOfDayCounts[0]++;
-        } else if (hour >= 12 && hour < 18) {
-            timeOfDayCounts[1]++;
-        } else if (hour >= 18 && hour < 24) {
-            timeOfDayCounts[2]++;
-        } else {
-            timeOfDayCounts[3]++;
-        }
-    });
+  // Add total commits
+  dl.append('dt').text('Total commits:');
+  dl.append('dd').text(filteredCommits? 
+    filteredCommits.length: 
+    commits.length);
 
-    const maxTimeOfDayIndex = d3.maxIndex(timeOfDayCounts);
-    dl.append('dt').text('Most commits made in:');
-    dl.append('dd').text(timeOfDay[maxTimeOfDayIndex]);
+  // Add more stats as needed...
+  // Add longest line
+  const longestLine = d3.max(data, (d) => d.length);
+  dl.append('dt').text('Longest line:');
+  dl.append('dd').text(filteredCommits?
+    filteredCommits.length == 0? 0: Math.max(...filteredCommits.flatMap(obj => obj.lines.map(line => line.length))):
+    longestLine
+  );
 
-    // Add day of week when most commits are made
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayOfWeekCounts = new Array(7).fill(0);
+  // Add maximum depth
+  const maxDepth = d3.max(data, (d) => d.depth);
+  dl.append('dt').text('Maximum depth:');
+  dl.append('dd').text(maxDepth);
 
-    commits.forEach(commit => {
-        const day = commit.datetime.getDay();
-        dayOfWeekCounts[day]++;
-    });
+  // Add time of day when most commits are made
+  const timeOfDay = ['Morning', 'Afternoon', 'Evening', 'Night'];
+  const timeOfDayCounts = [0, 0, 0, 0];
 
-    const maxDayOfWeekIndex = d3.maxIndex(dayOfWeekCounts);
-    dl.append('dt').text('Most commits made on:');
-    dl.append('dd').text(daysOfWeek[maxDayOfWeekIndex]);
+  let filtered_or_nah = filteredCommits? filteredCommits: commits;
+  filtered_or_nah.forEach(commit => {
+      const hour = commit.datetime.getHours();
+      if (hour >= 6 && hour < 12) {
+          timeOfDayCounts[0]++;
+      } else if (hour >= 12 && hour < 18) {
+          timeOfDayCounts[1]++;
+      } else if (hour >= 18 && hour < 24) {
+          timeOfDayCounts[2]++;
+      } else {
+          timeOfDayCounts[3]++;
+      }
+  });
+
+  const maxTimeOfDayIndex = d3.maxIndex(timeOfDayCounts);
+  dl.append('dt').text('Most commits made in:');
+  dl.append('dd').text(timeOfDay[maxTimeOfDayIndex]);
+
+  // Add day of week when most commits are made
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const dayOfWeekCounts = new Array(7).fill(0);
+
+  filtered_or_nah.forEach(commit => {
+      const day = commit.datetime.getDay();
+      dayOfWeekCounts[day]++;
+  });
+
+  const maxDayOfWeekIndex = d3.maxIndex(dayOfWeekCounts);
+  dl.append('dt').text('Most commits made on:');
+  dl.append('dd').text(daysOfWeek[maxDayOfWeekIndex]);
 }
 
-function createScatterplot() {
+function updateScatterplot(filteredCommits) {
   const width = 1000;
   const height = 600;
   const margin = { top: 10, right: 10, bottom: 30, left: 20 };
 
+  d3.select('svg').remove();
   const svg = d3
     .select('#chart')
     .append('svg')
@@ -123,23 +164,27 @@ function createScatterplot() {
 
   xScale = d3
     .scaleTime()
-    .domain(d3.extent(commits, (d) => d.datetime))
+    .domain(d3.extent(filteredCommits, (d) => d.datetime))
     .range([0, width])
     .nice();
 
   yScale = d3.scaleLinear().domain([0, 24]).range([height, 0]);
 
+  svg.selectAll('g').remove();
+
   const dots = svg.append('g').attr('class', 'dots');
 
-  const [minLines, maxLines] = d3.extent(commits, (d) => d.totalLines);
+  const [minLines, maxLines] = d3.extent(filteredCommits, (d) => d.totalLines);
   const rScale = d3
     .scaleSqrt() // Change only this line
     .domain([minLines, maxLines])
     .range([10, 30]);
 
+  dots.selectAll('circle').remove();
+
   dots
     .selectAll('circle')
-    .data(commits)
+    .data(filteredCommits)
     .join('circle')
     .attr('cx', (d) => xScale(d.datetime))
     .attr('cy', (d) => yScale(d.hourFrac))
@@ -151,11 +196,13 @@ function createScatterplot() {
       updateTooltipContent(commit);
       updateTooltipVisibility(true);
       updateTooltipPosition(event);
+      d3.select(event.currentTarget).classed('selected', true);
     })
     .on('mouseleave', () => {
       updateTooltipContent({}); // Clear tooltip content
       updateTooltipVisibility(false);
       d3.select(event.currentTarget).style('fill-opacity', 0.7);
+      d3.select(event.currentTarget).classed('selected', false);
     });
 
   const usableArea = {
@@ -202,7 +249,6 @@ function createScatterplot() {
 }
 
 function updateTooltipContent(commit) {
-  console.log(commit);
   const link = document.getElementById('commit-link');
   const date = document.getElementById('commit-date');
   const time = document.getElementById('commit-time');
@@ -249,22 +295,25 @@ function brushSelector() {
 
 let brushSelection = null;
 
-function brushed(event) {
-  brushSelection = event.selection;
+function brushed(evt) {
+  let brushSelection = evt.selection;
+  selectedCommits = !brushSelection
+    ? []
+    : filteredCommits.filter((commit) => {
+        let min = { x: brushSelection[0][0], y: brushSelection[0][1] };
+        let max = { x: brushSelection[1][0], y: brushSelection[1][1] };
+        let x = xScale(commit.date);
+        let y = yScale(commit.hourFrac);
+
+        return x >= min.x && x <= max.x && y >= min.y && y <= max.y;
+      });
   updateSelection();
   updateSelectionCount();
   updateLanguageBreakdown();
 }
 
 function isCommitSelected(commit) {
-  if (!brushSelection) {
-    return false;
-  }
-  const min = { x: brushSelection[0][0], y: brushSelection[0][1] };
-  const max = { x: brushSelection[1][0], y: brushSelection[1][1] }; 
-  const x = xScale(commit.date);
-  const y = yScale(commit.hourFrac);
-  return x >= min.x && x <= max.x && y >= min.y && y <= max.y;
+  return selectedCommits.includes(commit);
 }
 
 function updateSelection() {
@@ -273,9 +322,6 @@ function updateSelection() {
 }
 
 function updateSelectionCount() {
-  const selectedCommits = brushSelection
-    ? commits.filter(isCommitSelected)
-    : [];
 
   const countElement = document.getElementById('selection-count');
     countElement.textContent = `${
@@ -286,9 +332,6 @@ function updateSelectionCount() {
 }   
 
 function updateLanguageBreakdown() {
-  const selectedCommits = brushSelection
-    ? commits.filter(isCommitSelected)
-    : [];
   const container = document.getElementById('language-breakdown');
 
   if (selectedCommits.length === 0) {
@@ -319,4 +362,53 @@ function updateLanguageBreakdown() {
   }
 
   return breakdown;
+}
+
+function renderItems(startIndex) {
+  // Clear things off
+  itemsContainer.selectAll('div').remove();
+  console.log(commits);
+  const endIndex = Math.min(startIndex + VISIBLE_COUNT, commits.length);
+  let sortedCommits = commits.slice().sort((a, b) => a.datetime - b.datetime);
+  newCommitSlice = sortedCommits.slice(startIndex, endIndex);
+  filteredCommits = newCommitSlice;
+  updateScatterplot(newCommitSlice);
+  displayCommitFiles();
+  // Re-bind the commit data to the container and represent each using a div
+  itemsContainer.selectAll('div')
+                .data(sortedCommits)
+                .enter()
+                .append('div')
+                .html((commit, idx) => {
+                  return `
+                    <p>
+                      On ${commit.datetime.toLocaleString("en", {dateStyle: "full", timeStyle: "short"})}, I made
+                      <a href="${commit.url}" target="_blank">
+                        ${idx > 0 ? 'another glorious commit' : 'my first commit, and it was glorious'}
+                      </a>. I edited ${commit.totalLines} lines across ${d3.rollups(commit.lines, D =>
+                        D.length, d => d.file).length} files. Then I looked over all I had made, and I saw that it was very good.
+                    </p>
+                  `;
+                })
+                .style('position', 'absolute')
+                .style('top', (_, idx) => `${idx * ITEM_HEIGHT}px`)
+}
+
+function displayCommitFiles() {
+  const lines = filteredCommits.flatMap((d) => d.lines);
+  let fileTypeColors = d3.scaleOrdinal(d3.schemeTableau10);
+  let files = d3.groups(lines, (d) => d.file).map(([name, lines]) => {
+    return { name, lines };
+  });
+  files = d3.sort(files, (d) => -d.lines.length);
+  d3.select('.files').selectAll('div').remove();
+  let filesContainer = d3.select('.files').selectAll('div').data(files).enter().append('div');
+  filesContainer.append('dt').html(d => `<code>${d.name}</code><small>${d.lines.length} lines</small>`);
+  filesContainer.append('dd')
+                .selectAll('div')
+                .data(d => d.lines)
+                .enter()
+                .append('div')
+                .attr('class', 'line')
+                .style('background', d => fileTypeColors(d.type));
 }

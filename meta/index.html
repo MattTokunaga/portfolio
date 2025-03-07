@@ -9,11 +9,15 @@
     <script src="main.js" type="module"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<body>
+<body id="meta">
     <h1>Meta</h1>
     <div id="stats"></div>
     <h2>Commits by time of day</h2>
-    <div id="chart"></div>
+    <!-- <label for="Time filtering">
+        Show commits until:
+        <time id="time-display"></time>
+        <input id="time-slider" type="range" min = "0" max = "100" value = "100">
+    </label> -->
     <dl id="commit-tooltip" class="info tooltip" hidden>
         <dt>Commit</dt>
         <dd>
@@ -28,6 +32,15 @@
         <dt>Lines Edited</dt>
         <dd id="commit-lines-edited"></dd>
     </dl>
+    <d1 class="files"></d1>
+    <div id="scrollytelling">
+        <div id="scroll-container">
+            <div id="spacer"></div>
+            <div id="items-container"></div>
+        </div>
+        <!-- our old scatterplot div -->
+        <div id="chart"></div>
+    </div>
     <p id="selection-count">No commits selected</p>
     <dl id="language-breakdown" class="stats"></dl>
 </body>
